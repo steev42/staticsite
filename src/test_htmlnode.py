@@ -1,8 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode
-from htmlnode import LeafNode
-from htmlnode import ParentNode
+from htmlnode import (HTMLNode, LeafNode, ParentNode)
 
 class TestHTMLNode(unittest.TestCase):
     def test_empty_props(self):
@@ -22,7 +20,6 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode(properties={"junk":"put in data", "more junk":"this is weird", "do a third":"blah", "foo": "bar"})
         self.assertEqual(node.props_to_html(), ' junk="put in data" more junk="this is weird" do a third="blah" foo="bar"')
 
-class TestLeafNode(unittest.TestCase):
     def test_render(self):
         node = LeafNode("p", "This is a paragraph of text")
         self.assertEqual(node.to_html(), "<p>This is a paragraph of text</p>")
@@ -31,7 +28,6 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("p","This is a paragraph of text",properties={"style":"font-weight:bold"})
         self.assertEqual(node.to_html(), '<p style="font-weight:bold">This is a paragraph of text</p>')
 
-class TestParentNode(unittest.TestCase):
     def test_render(self):
         node = ParentNode("body",
                           [LeafNode("b","Bold Text")])
