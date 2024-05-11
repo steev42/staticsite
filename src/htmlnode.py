@@ -5,19 +5,20 @@ class HTMLNode:
     children  = []
     props = {}
 
-    def __init__(self, t=None, v=None, c=None, p=None):
-        self.tag = t
-        self.value = v
-        self.children = c
-        self.props = p
+    def __init__(self, tag=None, value=None, children=None, properties=None):
+        self.tag = tag
+        self.value = value
+        self.children = children
+        self.props = properties
     
     def to_html(self):
         raise NotImplementedError
 
     def props_to_html(self):
         outstring = ""
-        for prop in self.props.keys():
-            outstring += (" " + prop + "=\"" + self.props[prop] + "\"")
+        if self.props:
+            for prop in self.props.keys():
+                outstring += (" " + prop + "=\"" + self.props[prop] + "\"")
         return outstring
 
     def __repr__(self):
