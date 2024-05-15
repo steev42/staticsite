@@ -45,3 +45,6 @@ class TextNode:
                 return LeafNode("img","",{"src":text_node.url,"alt":text_node.text})
             case _:
                 raise Exception("Invalid text type format")
+
+
+    
