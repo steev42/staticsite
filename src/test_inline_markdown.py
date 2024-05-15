@@ -5,10 +5,7 @@ from textnode import (
     TextTypes
     )
 
-from inline_markdown import (
-    split_nodes_delimiter, 
-    extract_markdown_images,
-    extract_markdown_links)
+from inline_markdown import *
 
 class TestInlineMarkdown(unittest.TestCase):
 
@@ -90,6 +87,14 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             tuple
         )
+    
+    def test_image_extraction_no_image_found(self):
+        text = "This is an example text with absolutely no inline images to be found!"
+        tuple = extract_markdown_images(text)
+        self.assertListEqual(
+            [],
+            tuple
+        )
 
     def test_link_extraction(self):
         text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
@@ -100,6 +105,121 @@ class TestInlineMarkdown(unittest.TestCase):
             ('another', 'https://www.example.com/another')
             ],
             tuple
+        )
+
+    def test_link_extraction_no_image_found(self):
+        text = "This is an example text with absolutely no inline links to be found!"
+        tuple = extract_markdown_images(text)
+        self.assertListEqual(
+            [],
+            tuple
+        )
+
+    def test_image_delim_single(self):
+        node = TextNode("This is a text with a ![image](image.jpg) single image to deliminate.", TextTypes.TEXT)
+        list = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with a ", TextTypes.TEXT),
+                TextNode("image", TextTypes.IMAGE, "image.jpg"),
+                TextNode(" single image to deliminate.", TextTypes.TEXT)
+            ],
+            list
+        )
+    
+    def test_image_delim_multiple(self):
+        node = TextNode("This is a text with ![image](image.jpg) more than a ![another](img.jpg) single image to deliminate.", TextTypes.TEXT)
+        list = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with ", TextTypes.TEXT),
+                TextNode("image", TextTypes.IMAGE, "image.jpg"),
+                TextNode(" more than a ", TextTypes.TEXT),
+                TextNode("another", TextTypes.IMAGE, "img.jpg"),
+                TextNode(" single image to deliminate.", TextTypes.TEXT)
+            ],
+            list
+        )
+
+    def test_image_delim_none(self):
+        node = TextNode("This is a text without images to deliminate", TextTypes.TEXT)
+        list = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text without images to deliminate", TextTypes.TEXT)
+            ],
+            list
+        )
+
+    def test_image_delim_multiple_nodes(self):
+        node1 = TextNode("This is a text with a ![image](image.jpg) single image to deliminate.", TextTypes.TEXT)
+        node2 = TextNode("This is another text with a ![another](img.png) single image to deliminate.", TextTypes.TEXT)
+        
+        list = split_nodes_image([node1, node2])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with a ", TextTypes.TEXT),
+                TextNode("image", TextTypes.IMAGE, "image.jpg"),
+                TextNode(" single image to deliminate.", TextTypes.TEXT),
+                TextNode("This is another text with a ", TextTypes.TEXT),
+                TextNode("another", TextTypes.IMAGE, "img.png"),
+                TextNode(" single image to deliminate.", TextTypes.TEXT)
+            ],
+            list
+        )
+
+    def test_link_delim_single(self):
+        node = TextNode("This is a text with a [alt](http://boot.dev) single link to deliminate.", TextTypes.TEXT)
+        list = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with a ", TextTypes.TEXT),
+                TextNode("alt", TextTypes.LINK, "http://boot.dev"),
+                TextNode(" single link to deliminate.", TextTypes.TEXT)
+            ],
+            list
+        )
+    
+    def test_link_delim_multiple(self):
+        node = TextNode("This is a text with [alt](http://boot.dev) more than a [another](http://google.com) single link to deliminate.", TextTypes.TEXT)
+        list = split_nodes_link([node])
+        #print(list)
+        self.assertListEqual(
+            [
+                TextNode("This is a text with ", TextTypes.TEXT),
+                TextNode("alt", TextTypes.LINK, "http://boot.dev"),
+                TextNode(" more than a ", TextTypes.TEXT),
+                TextNode("another", TextTypes.LINK, "http://google.com"),
+                TextNode(" single link to deliminate.", TextTypes.TEXT)
+            ],
+            list
+        )
+
+    def test_link_delim_none(self):
+        node = TextNode("This is a text without links to deliminate", TextTypes.TEXT)
+        list = split_nodes_link([node])
+        #print(list)
+        self.assertListEqual(
+            [
+                TextNode("This is a text without links to deliminate", TextTypes.TEXT)
+            ],
+            list
+        )
+    
+    def test_link_delim_multiple_nodes(self):
+        node1 = TextNode("This is a text with a [alt](http://boot.dev) single link to deliminate.", TextTypes.TEXT)
+        node2 = TextNode("This is another text with a [morealt](http://google.com) single link to deliminate.", TextTypes.TEXT)
+        list = split_nodes_link([node1, node2])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with a ", TextTypes.TEXT),
+                TextNode("alt", TextTypes.LINK, "http://boot.dev"),
+                TextNode(" single link to deliminate.", TextTypes.TEXT),
+                TextNode("This is another text with a ", TextTypes.TEXT),
+                TextNode("morealt", TextTypes.LINK, "http://google.com"),
+                TextNode(" single link to deliminate.", TextTypes.TEXT)
+            ],
+            list
         )
 
 if __name__ == "__main__":
