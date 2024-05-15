@@ -5,7 +5,10 @@ from textnode import (
     TextTypes
     )
 
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import (
+    split_nodes_delimiter, 
+    extract_markdown_images,
+    extract_markdown_links)
 
 class TestInlineMarkdown(unittest.TestCase):
 
@@ -22,18 +25,6 @@ class TestInlineMarkdown(unittest.TestCase):
         self.assertEqual(split, [TextNode("Start with bold", TextTypes.BOLD),
                                  TextNode(" text, then go to plain.", TextTypes.TEXT),
                                  ])
-
-    def test_delim_bold(self):
-        node = TextNode("This is text with a **bolded** word", TextTypes.TEXT)
-        new_nodes = split_nodes_delimiter([node], "**", TextTypes.BOLD)
-        self.assertListEqual(
-            [
-                TextNode("This is text with a ", TextTypes.TEXT),
-                TextNode("bolded", TextTypes.BOLD),
-                TextNode(" word", TextTypes.TEXT),
-            ],
-            new_nodes,
-        )
 
     def test_delim_bold_double(self):
         node = TextNode(
@@ -87,6 +78,28 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word", TextTypes.TEXT),
             ],
             new_nodes,
+        )
+    
+    def test_image_extraction(self):
+        text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+        tuple = extract_markdown_images(text)
+        self.assertListEqual(
+            [
+            ('image','https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png'),
+            ('another', 'https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png')
+            ],
+            tuple
+        )
+
+    def test_link_extraction(self):
+        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        tuple = extract_markdown_links(text)
+        self.assertListEqual(
+            [
+            ('link','https://www.example.com'),
+            ('another', 'https://www.example.com/another')
+            ],
+            tuple
         )
 
 if __name__ == "__main__":
