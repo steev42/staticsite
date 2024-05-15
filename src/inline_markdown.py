@@ -53,7 +53,7 @@ def split_nodes_image(old_nodes):
                 new_nodes.append(TextNode(sections[0], TextTypes.TEXT))
                 new_nodes.append(TextNode(found_links[i][0], TextTypes.IMAGE, found_links[i][1]))
             
-            if i == len(found_links)- 1:
+            if i == len(found_links)- 1 and len(sections[1]) > 0:
                 # Last loop, so append the rest as a text node.
                 new_nodes.append(TextNode(sections[1], TextTypes.TEXT))
             else:
@@ -81,10 +81,20 @@ def split_nodes_link(old_nodes):
                 new_nodes.append(TextNode(sections[0], TextTypes.TEXT))
                 new_nodes.append(TextNode(found_links[i][0], TextTypes.LINK, found_links[i][1]))
             
-            if i == len(found_links) - 1 :
+            if i == len(found_links) - 1  and len(sections[1]) > 0:
                 # Last loop, so append the rest as a text node.
                 new_nodes.append(TextNode(sections[1], TextTypes.TEXT))
             else:
                 # otherwise, make sure we're only going to be looking in the section we haven't parsed already.
                 search_text = sections[1]
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextTypes.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextTypes.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextTypes.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextTypes.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+
+    return nodes

@@ -127,6 +127,17 @@ class TestInlineMarkdown(unittest.TestCase):
             list
         )
     
+    def test_image_delim_at_end(self):
+        node = TextNode("This is a text with the image at the end ![image](image.jpg)", TextTypes.TEXT)
+        list = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with the image at the end ", TextTypes.TEXT),
+                TextNode("image", TextTypes.IMAGE, "image.jpg")
+            ],
+            list
+        )
+    
     def test_image_delim_multiple(self):
         node = TextNode("This is a text with ![image](image.jpg) more than a ![another](img.jpg) single image to deliminate.", TextTypes.TEXT)
         list = split_nodes_image([node])
@@ -180,6 +191,17 @@ class TestInlineMarkdown(unittest.TestCase):
             list
         )
     
+    def test_link_delim_at_end(self):
+        node = TextNode("This is a text with the link at the end [alt](http://boot.dev)", TextTypes.TEXT)
+        list = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is a text with the link at the end ", TextTypes.TEXT),
+                TextNode("alt", TextTypes.LINK, "http://boot.dev")
+            ],
+            list
+        )
+    
     def test_link_delim_multiple(self):
         node = TextNode("This is a text with [alt](http://boot.dev) more than a [another](http://google.com) single link to deliminate.", TextTypes.TEXT)
         list = split_nodes_link([node])
@@ -221,6 +243,24 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             list
         )
+    
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+        nodes = text_to_textnodes(text)
+        expected_result = [
+            TextNode("This is ", TextTypes.TEXT),
+            TextNode("text", TextTypes.BOLD),
+            TextNode(" with an ", TextTypes.TEXT),
+            TextNode("italic", TextTypes.ITALIC),
+            TextNode(" word and a ", TextTypes.TEXT),
+            TextNode("code block", TextTypes.CODE),
+            TextNode(" and an ", TextTypes.TEXT),
+            TextNode("image", TextTypes.IMAGE, "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"),
+            TextNode(" and a ", TextTypes.TEXT),
+            TextNode("link", TextTypes.LINK, "https://boot.dev")
+            ]
+    
+        self.assertListEqual(nodes, expected_result)
 
 if __name__ == "__main__":
     unittest.main()
