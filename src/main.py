@@ -1,10 +1,9 @@
-from textnode import TextNode
+from static_copy import replace_public_directory
+
 
 def main():
-    print ("In Main...")
-    obj = TextNode("This is a text node","bold","https://www.boot.dev")
+    replace_public_directory()
 
-    print (obj) 
 
 if __name__ == "__main__":
     main()
