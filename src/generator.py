@@ -48,3 +48,26 @@ def generate_page(from_path, template_path, dest_path):
     from_file.close()
     template_file.close()
     dest_file.close()
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    print ("Recursively generating content.")
+    print (f"Source directory is {dir_path_content}")
+    files = os.listdir(dir_path_content)
+    print (f"{len(files)} files found")
+    for file in files:
+        full_file_path = os.path.join(dir_path_content, file)
+        dest_file_path = os.path.join(dest_dir_path, file)
+        if os.path.isfile(full_file_path):
+            filename = file.split(".")[0] 
+            dest_filename = filename + ".html"
+            dest_full_path = os.path.join(dest_dir_path, dest_filename)
+            generate_page(full_file_path, template_path, dest_full_path)
+
+        if os.path.isdir(full_file_path):
+            print (f"{full_file_path} is a directory; recursing")
+            generate_pages_recursive(full_file_path, template_path, dest_file_path)
+        
+                          
+    
+
+    pass
